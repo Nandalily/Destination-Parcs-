@@ -18,10 +18,24 @@
 
   /* ---------- menu on small screens ---------- */
   var menuBtn = $('[data-ad-menu]');
-  if (menuBtn) menuBtn.addEventListener('click', function () {
-    var open = document.body.classList.toggle('ad-menu-open');
-    menuBtn.setAttribute('aria-expanded', String(open));
-  });
+  var wide = window.matchMedia('(min-width: 901px)');
+  var syncMenu = function () {
+    if (!menuBtn) return;
+    menuBtn.setAttribute('aria-expanded', String(wide.matches ? !document.documentElement.classList.contains('ad-rail') : document.body.classList.contains('ad-menu-open')));
+  };
+  if (menuBtn) {
+    syncMenu();
+    menuBtn.addEventListener('click', function () {
+      if (wide.matches) {
+        var rail = document.documentElement.classList.toggle('ad-rail');
+        try { localStorage.setItem('adRail', rail ? '1' : '0'); } catch (e) { /* ignore */ }
+      } else {
+        document.body.classList.toggle('ad-menu-open');
+      }
+      syncMenu();
+    });
+    if (wide.addEventListener) wide.addEventListener('change', syncMenu);
+  }
 
   /* ---------- confirm + autosubmit ---------- */
   document.addEventListener('submit', function (e) {

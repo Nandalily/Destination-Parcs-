@@ -9,6 +9,7 @@
   <link rel="icon" href="/images/brand/favicon.ico" sizes="any">
   <link rel="stylesheet" href="<%= asset('/css/main.css') %>">
   <link rel="stylesheet" href="<%= asset('/css/admin.css') %>">
+  <script src="<%= asset('/js/admin-nav.js') %>"></script>
 </head>
 <body class="admin <%= adminUser ? 'admin--app' : 'admin--bare' %>">
 <% const flashBox = flash ? '<div class="ad-flash ad-flash--' + flash.type + '" role="status">' + flash.text.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</div>' : ''; %>
@@ -32,19 +33,19 @@
         <% if (g[0]) { %><p class="ad__group"><%= g[0] %></p><% } %>
         <ul>
           <% g[1].forEach(function (l) { %>
-            <li><a href="<%= l[0] %>" class="<%= on(l[0]) ? 'is-on' : '' %>" <%- on(l[0]) ? 'aria-current="page"' : '' %>><%- icon(l[2]) %><span><%= l[1] %></span><% if (l[3]) { %><b class="ad__badge"><%= l[3] %></b><% } %></a></li>
+            <li><a href="<%= l[0] %>" title="<%= l[1] %>" class="<%= on(l[0]) ? 'is-on' : '' %>" <%- on(l[0]) ? 'aria-current="page"' : '' %>><%- icon(l[2]) %><span><%= l[1] %></span><% if (l[3]) { %><b class="ad__badge"><%= l[3] %></b><% } %></a></li>
           <% }) %>
         </ul>
       <% }) %>
     </nav>
     <div class="ad__user">
-      <span><%- icon('user') %><%= adminUser.name %></span>
-      <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button type="submit" class="ad__link"><%- icon('logout') %>Sign out</button></form>
+      <span title="<%= adminUser.name %>"><%- icon('user') %><em><%= adminUser.name %></em></span>
+      <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button type="submit" class="ad__link" title="Sign out"><%- icon('logout') %><span>Sign out</span></button></form>
     </div>
   </aside>
   <div class="ad__main">
     <header class="ad__top">
-      <button type="button" class="ad__menu" data-ad-menu aria-controls="ad-side" aria-expanded="false" aria-label="Menu"><%- icon('menu') %></button>
+      <button type="button" class="ad__menu" data-ad-menu aria-controls="ad-side" aria-expanded="true" aria-label="Show or hide the menu" title="Show or hide the menu"><%- icon('menu') %></button>
       <h1><%= pageTitle %></h1>
       <a class="btn btn--light-outline btn--sm" href="/" target="_blank" rel="noopener">View website <%- icon('arrow-right') %></a>
     </header>

@@ -26,12 +26,14 @@ router.get('/', (req, res) => {
 router.get('/gallery', (req, res) => {
   const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   let albums = (d.pages.albums || []).filter((a) => a && a.items && a.items.length).map((a) => ({ name: a.name, slug: slug(a.name), items: a.items }));
-  if (!albums.length) {
-    // nothing added yet: show the home page gallery, or the built-in pictures
-    const home = (d.pages.gallery || []).filter((g) => g && g.src);
-    const items = home.length ? home : media.list('gallery').map((src) => ({ type: 'image', src, caption: '' }));
-    albums = items.length ? [{ name: 'All photos', slug: 'all', items }] : [];
-  }
+  // The pictures that were already on the gallery (home gallery, or the built-in set) always stay,
+  // as the "Highlights" album. New albums are added alongside them, never in place of them.
+  const used = new Set();
+  albums.forEach((a) => a.items.forEach((t) => used.add(t.src)));
+  const home = (d.pages.gallery || []).filter((g) => g && g.src);
+  const base = (home.length ? home : media.list('gallery').map((src) => ({ type: 'image', src, caption: '' })))
+    .filter((t) => !used.has(t.src));
+  if (base.length) albums.unshift({ name: albums.length ? 'Highlights' : 'All photos', slug: albums.length ? 'highlights' : 'all', items: base });
   res.render('pages/gallery', {
     pageTitle: 'Photo and video gallery', activeNav: 'plan', albums,
     metaDescription: 'Photos and videos from Destination Parcs, The Farm, Katuulo.',
